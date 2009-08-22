@@ -1,0 +1,27 @@
+#!/usr/bin/ruby -w
+#
+# $Id: batch_operation,v 1.2 2009/02/20 00:37:15 ianmacd Exp $
+
+require 'amazon/aws/search'
+ 
+include Amazon::AWS
+include Amazon::AWS::Search
+ 
+rg = ResponseGroup.new( :Small )
+req = Request.new
+req.locale = 'uk'
+req.cache = false
+
+is = ItemSearch.new( 'Books', { 'Title' => 'ruby programming' } )
+is2 = ItemSearch.new( 'Music', { 'Title' => 'stranglers' } )
+#more_is = [ ItemSearch.new( 'Music', { 'Title' => 'stranglers' } ),
+#	    ItemSearch.new( 'DVD', { 'Director' => 'scorsese' } ) ]
+
+more_is = [ ItemSearch.new( 'Music', { 'Artist' => 'stranglers' } ) ]
+
+is.batch( more_is )
+
+batched_response = req.search( is, rg )
+itemsearch = batched_response.item_search_response[0].items
+
+puts itemsearch
